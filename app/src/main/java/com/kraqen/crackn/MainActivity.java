@@ -1,9 +1,17 @@
 package com.kraqen.crackn;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+
+import java.io.File;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -13,7 +21,14 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        ImageButton logoButton = (ImageButton) findViewById(R.id.get_crakn_button);
+        logoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
