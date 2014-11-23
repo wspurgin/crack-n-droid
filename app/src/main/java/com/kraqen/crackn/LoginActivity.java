@@ -5,14 +5,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.LoaderManager.LoaderCallbacks;
-import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.net.http.AndroidHttpClient;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -28,28 +25,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HTTP;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +46,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private boolean mAuthTask = false;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -101,6 +85,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        CracknRestClient.usePersistentCookieStore(this);
     }
 
     private void populateAutoComplete() {
@@ -114,7 +99,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * errors are presented and no actual login attempt is made.
      */
     public void attemptLogin() {
-        if (mAuthTask != null) {
+        if (mAuthTask) {
             return;
         }
 
@@ -156,8 +141,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask = true;
+            UserLoginTask(email, password);
         }
     }
 
@@ -259,87 +244,57 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public void UserLoginTask(String email, String password) {
 
-        private final String mEmail;
-        private final String mPassword;
-        private final String URL = "http://54.69.211.217/login";
-        private final String LOGTAG = "CRN-Login";
+        final String URL = "login";
+        final String LOGTAG = "CRN-Login";
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                HttpContext httpContext = new BasicHttpContext();
-                DefaultHttpClient client = new DefaultHttpClient();
-                HttpConnectionParams.setConnectionTimeout(client.getParams(), 10000); //Timeout Limit
-                HttpResponse response;
-                JSONObject json = new JSONObject();
-                HttpPost post = new HttpPost(new URI(URL));
-                json.put("email", mEmail);
-                json.put("password", mPassword);
-                StringEntity se = new StringEntity( json.toString());
-                se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, "application/json"));
-                post.setEntity(se);
-                response = client.execute(post, httpContext);
-
-                //Checking response
-                if (response!=null) {
-                    InputStream in = response.getEntity().getContent();
-                    java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
-                    String res =  s.hasNext() ? s.next() : "";
-                    Log.i(this.LOGTAG, res);
-                    if (response.getStatusLine().getStatusCode() == 200) {
-                        SharedPreferences preferences = getSharedPreferences("CRN",
-                                Activity.MODE_PRIVATE);
-                        preferences.edit().putString("user", res).commit();
-                        // TODO: Handle persisting the cookie returned from the response
-                        List<Cookie> cookiejar = client.getCookieStore().getCookies();
-                        Cookie cookie = cookiejar.get(1);
-
-                        return true;
-                    }
-                } else {
-                    return false;
+        try {
+            JSONObject json = new JSONObject();
+            json.put("email", email);
+            json.put("password", password);
+            CracknRestClient.post(URL, json, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    Log.i(LOGTAG, response.toString());
+                    SharedPreferences preferences = getSharedPreferences("CRN",
+                            Activity.MODE_PRIVATE);
+                    preferences.edit().putString("user", response.toString()).commit();
+                    onPostExecute(true);
                 }
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            } catch (IOException e) {
-                Log.i(this.LOGTAG, e.getMessage());
-                return false;
-            } catch (JSONException e) {
-                Log.i(this.LOGTAG, e.getMessage());
-            } catch (URISyntaxException e) {
-                Log.i(this.LOGTAG, e.getMessage());
-            }
 
-            return false;
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable,
+                                      JSONObject errorResponse) {
+                    Log.i(LOGTAG, throwable.getMessage(), throwable);
+                    onPostExecute(false);
+                }
+            });
+        } catch (IOException e) {
+            Log.i(LOGTAG, e.getMessage());
+            onPostExecute(false);
+        } catch (JSONException e) {
+            Log.i(LOGTAG, e.getMessage());
+            onPostExecute(false);
         }
+    }
 
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
 
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
+    protected void onPostExecute(final Boolean success) {
+        mAuthTask = false;
+        showProgress(false);
+
+        if (success) {
+            finish();
+        } else {
+            mPasswordView.setError(getString(R.string.error_incorrect_password));
+            mPasswordView.requestFocus();
         }
+    }
 
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
+    protected void onCancelled() {
+        mAuthTask = false;
+        showProgress(false);
     }
 }
 
