@@ -12,9 +12,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class HomeActivity extends Activity {
@@ -68,17 +76,40 @@ public class HomeActivity extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-            return rootView;
+            // return the root view
+            return inflater.inflate(R.layout.fragment_home, container, false);
         }
 
         @Override
-        public void onViewCreated(View view, Bundle savedInstanceState) {
+        public void onViewCreated(final View view, Bundle savedInstanceState) {
             try {
                 Bundle args = getArguments();
                 User user = new User(args.getString("com.kraqen.crackn.User"));
                 TextView textView = (TextView) view.findViewById(R.id.home_greetings);
                 textView.setText(user.getName().toCharArray(), 0, user.getName().length());
+                CracknRestClient.get("projects", null, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray projects) {
+                        Log.i(LOGTAG, projects.toString());
+                        ListView projectListing = (ListView) view.findViewById(R.id.gridView);
+
+                        // TODO make this an ArrayList of custom Project objects
+                        String[] projectStrings = new String[projects.length()];
+                        for (int i = 0; i < projects.length(); ++i) {
+                            try {
+                                JSONObject project = projects.getJSONObject(i);
+                                projectStrings[i] = project.getString("name");
+                            } catch (JSONException e) {
+                                Log.i(LOGTAG, e.getMessage());
+                            }
+                        }
+                        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                                projectListing.getContext(),
+                                android.R.layout.simple_list_item_1,
+                                projectStrings);
+                        projectListing.setAdapter(adapter);
+                    }
+                });
             } catch (JSONException e) {
                 Log.i(LOGTAG, e.getMessage());
             }

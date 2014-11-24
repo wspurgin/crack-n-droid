@@ -12,6 +12,9 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 
 /**
+ * CracknRestClient Class
+ * Simple REST client interface for communications with the Crackn API.
+ *
  * Created by Will on 11/23/14.
  */
 public class CracknRestClient {
@@ -24,6 +27,10 @@ public class CracknRestClient {
     public static void usePersistentCookieStore(Context context) {
         CracknRestClient.context = context;
         client.setCookieStore(new PersistentCookieStore(context));
+    }
+
+    public static void setContext(Context context) {
+        CracknRestClient.context = context;
     }
 
     public static void get(String url,

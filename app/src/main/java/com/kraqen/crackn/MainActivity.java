@@ -32,6 +32,7 @@ public class MainActivity extends Activity {
         // Clear the persistent file store
         preferences.edit().clear().commit();
 
+        CracknRestClient.usePersistentCookieStore(this.getApplicationContext());
         ImageButton logoButton = (ImageButton) findViewById(R.id.get_crakn_button);
         logoButton.setOnClickListener(new View.OnClickListener() {
             @Override
