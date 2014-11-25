@@ -24,6 +24,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+
 
 public class HomeActivity extends Activity {
     private static final String LOGTAG = "CRN-Home";
@@ -89,24 +92,24 @@ public class HomeActivity extends Activity {
                 textView.setText(user.getName().toCharArray(), 0, user.getName().length());
                 CracknRestClient.get("projects", null, new JsonHttpResponseHandler() {
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONArray projects) {
-                        Log.i(LOGTAG, projects.toString());
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray JSONProjects) {
+                        Log.i(LOGTAG, JSONProjects.toString());
                         ListView projectListing = (ListView) view.findViewById(R.id.gridView);
 
-                        // TODO make this an ArrayList of custom Project objects
-                        String[] projectStrings = new String[projects.length()];
-                        for (int i = 0; i < projects.length(); ++i) {
+                        ArrayList<Project> projects = new ArrayList<Project>();
+                        for (int i = 0; i < JSONProjects.length(); ++i) {
                             try {
-                                JSONObject project = projects.getJSONObject(i);
-                                projectStrings[i] = project.getString("name");
+                                projects.add(new Project(JSONProjects.getJSONObject(i)));
                             } catch (JSONException e) {
+                                Log.i(LOGTAG, e.getMessage());
+                            } catch (ParseException e) {
                                 Log.i(LOGTAG, e.getMessage());
                             }
                         }
-                        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                        final ArrayAdapter<Project> adapter = new ArrayAdapter<Project>(
                                 projectListing.getContext(),
                                 android.R.layout.simple_list_item_1,
-                                projectStrings);
+                                projects);
                         projectListing.setAdapter(adapter);
                     }
                 });
