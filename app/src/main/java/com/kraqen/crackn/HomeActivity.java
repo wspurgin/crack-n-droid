@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -111,6 +112,23 @@ public class HomeActivity extends Activity {
                                 android.R.layout.simple_list_item_1,
                                 projects);
                         projectListing.setAdapter(adapter);
+                        projectListing.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, final View view,
+                                                    int position, long id) {
+                                final Project item = (Project) parent.getItemAtPosition(position);
+                                // TODO make intent that launches message view board
+                            }
+
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable,
+                                          JSONObject errorResponse) {
+                        Log.i(LOGTAG, throwable.getMessage(), throwable);
+                        Log.i(LOGTAG, String.valueOf(statusCode).concat(errorResponse.toString()));
                     }
                 });
             } catch (JSONException e) {

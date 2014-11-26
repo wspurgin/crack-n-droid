@@ -30,6 +30,14 @@
             android:name="com.kraqen.crackn.HomeActivity"
             android:label="@string/title_activity_home" >
         </activity>
+        <activity
+            android:name="com.kraqen.crackn.MessageBoardActivity"
+            android:label="@string/title_activity_message_board"
+            android:parentActivityName="com.kraqen.crackn.HomeActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.kraqen.crackn.HomeActivity" />
+        </activity>
     </application>
 
 </manifest>
