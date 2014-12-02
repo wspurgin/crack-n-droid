@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
  */
 public class CracknRestClient {
     private static final String BASE_URL = "http://54.69.211.217/";
+    private static final int CONNECTION_TIMEOUT = 5000;
 
     private static AsyncHttpClient client = new AsyncHttpClient();
 
@@ -36,12 +37,14 @@ public class CracknRestClient {
     public static void get(String url,
                            RequestParams params,
                            AsyncHttpResponseHandler responseHandler) {
+        client.setTimeout(CONNECTION_TIMEOUT);
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
 
     public static void post(String url,
                             RequestParams params,
                             AsyncHttpResponseHandler responseHandler) {
+        client.setTimeout(CONNECTION_TIMEOUT);
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 
@@ -51,6 +54,7 @@ public class CracknRestClient {
                             throws UnsupportedEncodingException {
         StringEntity se = new StringEntity(json.toString());
         se.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, RequestParams.APPLICATION_JSON));
+        client.setTimeout(CONNECTION_TIMEOUT);
         client.post(context, getAbsoluteUrl(url), se, RequestParams.APPLICATION_JSON,
                 responseHandler);
     }

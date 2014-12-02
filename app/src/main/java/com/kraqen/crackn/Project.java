@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.Date;
  *
  * Created by Will on 11/24/14.
  */
-public class Project {
+public class Project implements Serializable {
     private String _id;
     private String name;
     private Date endDate;

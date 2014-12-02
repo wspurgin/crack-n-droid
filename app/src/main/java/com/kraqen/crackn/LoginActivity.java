@@ -30,6 +30,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -266,6 +267,26 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable,
                                       JSONObject errorResponse) {
                     Log.i(LOGTAG, throwable.getMessage(), throwable);
+                    onPostExecute(false);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    Log.i(LOGTAG, responseString);
+                    onPostExecute(false);
+                }
+
+                /**
+                 * Returns when request failed
+                 *
+                 * @param statusCode    http response status line
+                 * @param headers       response headers if any
+                 * @param throwable     throwable describing the way request failed
+                 * @param errorResponse parsed response if any
+                 */
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                    Log.i(LOGTAG, errorResponse.toString(), throwable);
                     onPostExecute(false);
                 }
             });

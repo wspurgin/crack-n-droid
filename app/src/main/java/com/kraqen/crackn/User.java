@@ -6,10 +6,12 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by Will on 11/17/14.
  */
-public class User {
+public class User implements Serializable {
     private String email;
     private String username;
     private String id;
@@ -49,6 +51,30 @@ public class User {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 
     public String toString() {

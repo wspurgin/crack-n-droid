@@ -1,17 +1,33 @@
 package com.kraqen.crackn;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 
 public class MessageBoardActivity extends Activity {
+
+    private Project project;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_board);
+        Intent intent = getIntent();
+        this.project = (Project) intent.getSerializableExtra("project");
+
+        // Initialize List view of messages
+        ListView messageList = (ListView) findViewById(R.id.messageList);
+        final ArrayAdapter<Message> adapter = new ArrayAdapter<Message>(
+                this,
+                android.R.layout.simple_list_item_1,
+                project.getMessages()
+        );
+        messageList.setAdapter(adapter);
     }
 
 

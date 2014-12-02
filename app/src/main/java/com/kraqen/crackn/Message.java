@@ -3,6 +3,7 @@ package com.kraqen.crackn;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +13,7 @@ import java.util.Date;
  *
  * Created by Will on 11/25/14.
  */
-public class Message {
+public class Message implements Serializable {
     private String _id;
     private String user_id;
     private String username;
@@ -78,5 +79,9 @@ public class Message {
 
     public void setTimeSent(Date timeSent) {
         this.timeSent = timeSent;
+    }
+
+    public String toString() {
+        return String.format("%s: %s", this.username, this.body);
     }
 }
