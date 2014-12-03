@@ -24,13 +24,13 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:ems="10"
-            android:id="@+id/editText"
+            android:id="@+id/messageText"
             android:layout_weight="1" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/send_message"
-            android:id="@+id/button" />
+            android:id="@+id/sendMessage" />
     </LinearLayout>
 </RelativeLayout>

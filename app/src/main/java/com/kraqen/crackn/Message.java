@@ -84,4 +84,15 @@ public class Message implements Serializable {
     public String toString() {
         return String.format("%s: %s", this.username, this.body);
     }
+
+    public JSONObject toJSON() throws JSONException {
+        JSONObject jsonMessage = new JSONObject();
+        jsonMessage.put("_id", this._id);
+        jsonMessage.put("user_id", this.user_id);
+        jsonMessage.put("username", this.username);
+        jsonMessage.put("body", this.body);
+        jsonMessage.put("timeSent", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .format(this.timeSent));
+        return jsonMessage;
+    }
 }

@@ -184,7 +184,6 @@ public class HomeActivity extends Activity {
                     projects);
             projectListing.setAdapter(adapter);
             projectListing.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
                 @Override
                 public void onItemClick(AdapterView<?> parent, final View view,
                                         int position, long id) {
@@ -192,9 +191,9 @@ public class HomeActivity extends Activity {
                     Intent intent = new Intent(parent.getContext(),
                             MessageBoardActivity.class);
                     intent.putExtra("project", item);
+                    intent.putExtra("user", user);
                     startActivity(intent);
                 }
-
             });
         }
     }
