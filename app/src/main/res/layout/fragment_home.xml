@@ -12,6 +12,8 @@
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
         android:id="@+id/gridView"
         android:layout_below="@+id/home_greetings"
         android:layout_toRightOf="@+id/home_greetings"

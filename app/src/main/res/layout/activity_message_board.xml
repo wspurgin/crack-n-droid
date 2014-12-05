@@ -9,6 +9,8 @@
     <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll"
         android:id="@+id/messageList"
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/messageLayout"

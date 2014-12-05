@@ -1,5 +1,7 @@
 package com.kraqen.crackn;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,6 +41,14 @@ public class Message implements Serializable {
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(message.getString(
                         "timeSent"))
         );
+    }
+
+    public boolean equals(Object object) {
+        return object.getClass().isAssignableFrom(Message.class) && this.equals((Message) object);
+    }
+
+    public boolean equals(Message message) {
+        return message._id.equals(this._id);
     }
 
     public String get_id() {

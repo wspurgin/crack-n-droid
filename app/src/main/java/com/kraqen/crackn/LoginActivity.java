@@ -271,7 +271,8 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                public void onFailure(int statusCode, Header[] headers, String responseString,
+                                      Throwable throwable) {
                     Log.i(LOGTAG, responseString);
                     onPostExecute(false);
                 }
@@ -310,6 +311,19 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             mPasswordView.setError(getString(R.string.error_incorrect_password));
             mPasswordView.requestFocus();
         }
+    }
+
+    protected void onPostExecute(int errorCode) {
+        mAuthTask = false;
+        showProgress(false);
+
+        String error;
+        if (errorCode == 401)
+            error = getString(R.string.error_incorrect_password);
+        else
+            error = "Connection error";
+        mPasswordView.setError(error);
+        mPasswordView.requestFocus();
     }
 
     protected void onCancelled() {
